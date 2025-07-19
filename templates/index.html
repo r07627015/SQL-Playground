@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL Playground</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="header">SQL Playground</div>
+    <div id="container">
+        <div id="sidebar">
+            <h3>Upload CSV or SQL</h3>
+            <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data">
+                <input type="file" name="file" required><br>
+                <input type="text" name="table_name" placeholder="Table name (for CSV)"><br>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+        <div id="main">
+            <form id="query-form" method="post" action="/query">
+                <textarea name="sql" placeholder="Enter SQL query"></textarea>
+                <div class="toolbar">
+                    <button type="submit">Execute</button>
+                    <button type="button" id="plan-btn">Show Plan</button>
+                </div>
+            </form>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('query-form').addEventListener('submit', function(evt) {
+        evt.preventDefault();
+        var formData = new FormData(this);
+        fetch('/query', {method: 'POST', body: formData})
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+            });
+    });
+
+    document.getElementById('plan-btn').addEventListener('click', function() {
+        var form = document.getElementById('query-form');
+        var formData = new FormData(form);
+        formData.append('plan', '1');
+        fetch('/query', {method: 'POST', body: formData})
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+            });
+    });
+    </script>
+</body>
+</html>
