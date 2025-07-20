@@ -45,6 +45,9 @@ body {
 #plan-btn {
     margin-left: 5px;
 }
+#visual-plan-btn {
+    margin-left: 5px;
+}
 
 #results {
     margin-top: 10px;
@@ -52,6 +55,6 @@ body {
     background-color: #fff;
     border: 1px solid #ccc;
     overflow: auto;
-    white-space: pre;
+    white-space: pre-wrap;
     padding: 10px;
 }
