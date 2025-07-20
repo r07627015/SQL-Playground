@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, jsonify
 import sqlite3
 import pandas as pd
 import io
-from sqlalchemy import text
 
 app = Flask(__name__)
 

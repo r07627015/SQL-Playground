@@ -21,6 +21,7 @@
                 <div class="toolbar">
                     <button type="submit">Execute</button>
                     <button type="button" id="plan-btn">Show Plan</button>
+                    <button type="button" id="visual-plan-btn">Visual Plan</button>
                 </div>
             </form>
             <div id="results"></div>
@@ -46,6 +47,39 @@
             .then(r => r.json())
             .then(data => {
                 document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+            });
+    });
+
+    function buildPlanTree(plan) {
+        var nodes = {};
+        plan.forEach(function(row) {
+            nodes[row.id] = { detail: row.detail, children: [] };
+        });
+        plan.forEach(function(row) {
+            if (row.parent in nodes && row.parent !== row.id) {
+                nodes[row.parent].children.push(nodes[row.id]);
+            }
+        });
+        var roots = plan.filter(function(row) { return !(row.parent in nodes) || row.parent === 0; });
+        function render(node) {
+            var html = '<li>' + node.detail;
+            if (node.children.length) {
+                html += '<ul>' + node.children.map(render).join('') + '</ul>';
+            }
+            html += '</li>';
+            return html;
+        }
+        return '<ul>' + roots.map(function(r) { return render(nodes[r.id]); }).join('') + '</ul>';
+    }
+
+    document.getElementById('visual-plan-btn').addEventListener('click', function() {
+        var form = document.getElementById('query-form');
+        var formData = new FormData(form);
+        formData.append('plan', '1');
+        fetch('/query', {method: 'POST', body: formData})
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('results').innerHTML = buildPlanTree(data);
             });
     });
     </script>
